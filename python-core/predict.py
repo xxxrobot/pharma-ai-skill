@@ -9,8 +9,12 @@ import json
 import os
 import numpy as np
 from rdkit import Chem
-from rdkit.Chem import Descriptors, Crippen, Lipinski, AllChem
-from rdkit.Chem.AllChem import GetMorganFingerprintAsBitVect
+from rdkit.Chem import Descriptors, Crippen, Lipinski, rdFingerprintGenerator
+import numpy as np
+import joblib
+
+# 初始化Morgan指纹生成器 (避免弃用警告)
+_morgan_generator = rdFingerprintGenerator.GetMorganGenerator(radius=2, fpSize=2048)
 import joblib
 
 # 模型目录
@@ -47,7 +51,7 @@ def calculate_features(smiles):
     }
     
     # Morgan指纹
-    fp = GetMorganFingerprintAsBitVect(mol, 2, 2048)
+    fp = _morgan_generator.GetFingerprint(mol)
     features['fingerprint'] = np.array(fp)
     
     return features
